@@ -1,8 +1,8 @@
 const express = require("express");
+const errorHandler = require("./middleware/errorHandler");
 const dotenv = require("dotenv");
 const contact_routes = require("./Routes/contact");
 const connectDB = require("./config/dbConnection");
-const errorHandler = require("./middleware/errorHandler");
 
 dotenv.config({ path: './config.env' });
 
@@ -14,7 +14,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(express.json()); // Parse JSON requests
+app.use(express.json()); //terminal ma request body log garauna ko lagi parse garnu parne hunchha. so this will be helpful at that case.
 app.use("/api/contacts", contact_routes); // Define routes for contacts
 app.use(errorHandler); // Handle errors
 

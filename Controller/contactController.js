@@ -1,6 +1,6 @@
 //const express=require("express")
 const asyncHandler=require("express-async-handler")
-const Contacts=require("./../model/contactModel")
+const Contacts=require("./../model/contactModel");
 
 //@desc getAllContacts
 //@route GET/api/contacts
@@ -13,37 +13,25 @@ const getAllContacts=asyncHandler(async(req,res)=>{
     })
 });
 
-
-
-
-
-
-
-
-
-// const getAllContacts=async(req,res)=>{
-//     try{
-//         console.log("hellooooooooooooooooooo")
-//         // const cont=Contacts.find();
-//         // res.status(200).json({
-//         //     status:"success",
-//         //     message:cont
-//         // })
-//     }catch(err)
-//     {
-//         console.log(err);
-//         res.status(400).json({
-//             message:err
-//         })
-//     }
-// }
-
 // @desc getContacts single
 // @route GET/api/contacts/:id
 // @access public
-const getContact=async(req,res)=>{
-    res.status(200).json({message:`single ${req.params.id} contacts from controller!!`})
-};
+const getContact = asyncHandler(async (req, res,next) => {
+    
+    const contact=await Contacts.findById(req.params.id)
+    if(!contact){
+        const err=new Error("Contact not found!!");
+        err.status="Fail";
+        err.statusCode=404;
+        next(err);
+    }
+    res.sendStatus(200).json({
+        status:"Success",
+        data:contact
+    })
+    
+    
+});
 
 //@desc CreateContacts single
 //@route POST/api/contacts

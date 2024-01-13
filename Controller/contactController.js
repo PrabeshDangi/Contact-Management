@@ -1,6 +1,6 @@
 //const express=require("express")
 const asyncHandler=require("express-async-handler")
-const Contacts=require("./../model/contactModel");
+const Contacts=require("../model/contactModel");
 
 //@desc getAllContacts
 //@route GET/api/contacts
@@ -19,13 +19,13 @@ const getAllContacts=asyncHandler(async(req,res)=>{
 const getContact = asyncHandler(async (req, res,next) => {
     
     const contact=await Contacts.findById(req.params.id)
+
     if(!contact){
-        const err=new Error("Contact not found!!");
-        err.status="Fail";
-        err.statusCode=404;
-        next(err);
+        const error=new Error("Contact not found!!");
+        error.status=404;
+        return next(error);//Yeha nera return nagarda bug aako thiyo. i.e status success aairako thiyo!!
     }
-    res.sendStatus(200).json({
+    res.status(200).json({
         status:"Success",
         data:contact
     })
@@ -36,7 +36,7 @@ const getContact = asyncHandler(async (req, res,next) => {
 //@desc CreateContacts single
 //@route POST/api/contacts
 //@access public
-const postContact = async (req, res, next) => {
+const postContact = asyncHandler(async (req, res, next) => {
     console.log(req.body);
     const { name, email, phone } = req.body;
 
@@ -50,9 +50,11 @@ const postContact = async (req, res, next) => {
         email,
         phone
     })
-     
-        res.status(201).json(contact);
-};
+     res.status(201).json({
+        status:"Success",
+        data:req.body
+    });
+});
 
 
 

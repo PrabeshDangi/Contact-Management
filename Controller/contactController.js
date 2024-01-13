@@ -61,19 +61,38 @@ const postContact = asyncHandler(async (req, res, next) => {
 //@desc updateContacts
 //@route PUT/api/contacts/:id
 //@access public
-const putContacts=async(req,res)=>{
-    res.status(201).json({message:"put contacts from controller!!"})
-};
+const putContacts=asyncHandler(async(req,res)=>{
+    const contact=await Contacts.findById(req.params.id);
+    if(!contact)
+    {
+        const error=new Error("Contact Not found!!");
+        error.status=404;
+        return next(error);
+    }
+
+    const updatedContact=await Contacts.findByIdAndUpdate(req.params.id, req.body, {new:true,runValidators:true})
+    res.status(201).json(updatedContact)
+});
 
 //@desc deleteContact
 //@route DELETE/api/contacts/:id
 //@access public
-const deleteContact=async(req,res)=>{
+const deleteContact=asyncHandler(async(req,res)=>{
+    const contact=await Contacts.findById(req.params.id);
+    if(!contact)
+    {
+        const error=new Error("Contact Not found!!");
+        error.status=404;
+        return next(error);
+    }
+
+    const deleteContact=await Contacts.findByIdAndDelete(req.params.id)
+    //const deleteContact=await Contacts.remove();
     res.status(204).json({
         status:"success",
-        data:null
+        message:"Contact deleted Successfully"
     })
-};
+});
 
 
 module.exports={

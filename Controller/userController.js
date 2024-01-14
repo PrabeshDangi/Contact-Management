@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt=require("bcrypt");
+const jwt=require("jsonwebtoken")
 const User=require("../model/userModel");
 
 
@@ -58,7 +59,33 @@ const registerUser=asyncHandler(async(req,res,next)=>{
 // @route POST/api/users/login
 // @access Public
 const userLogin=asyncHandler(async(req,res,next)=>{
-    res.json({message:"User Login!!"})
+    const{email,password}=req.body;
+    if(!email|| !password){
+        const error=new Error("Please Enter your email and password!!")
+        error.status=400
+        return next(error)
+    }
+    const userAvailable=await User.findOne({email});
+    if(userAvailable && (await bcrypt.compare(password,userAvailable.password)))
+    {
+        //signing takes three parameters as jwt.sign(payload,secret token,options/callback)
+        const accessToken=jwt.sign({
+            user:{
+                username:userAvailable.username,
+                email:userAvailable.email,
+                _id:userAvailable.id
+            }
+        },process.env.ACCESS_SECRET_KEY,
+        {expiresIn:"10m"}
+        );
+        res.status(200).json(accessToken)
+    }else
+    {
+        const error=new Error("Invalid email and password!!")
+        error.status=401
+        return next(error);
+    }
+    
 })
 
 
@@ -66,7 +93,7 @@ const userLogin=asyncHandler(async(req,res,next)=>{
 // @route get/api/users/current
 // @access Private
 const currentUser=asyncHandler(async(req,res,next)=>{
-    res.json({message:"Current User information!!"})
+    res.json(req.user)
 })
 
 module.exports={

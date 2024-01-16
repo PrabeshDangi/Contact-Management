@@ -1,4 +1,5 @@
 const asyncHandler=require("express-async-handler")
+
 const jwt=require("jsonwebtoken");
 
 const tokenValidator=asyncHandler(async(req,res,next)=>{
@@ -19,7 +20,8 @@ const tokenValidator=asyncHandler(async(req,res,next)=>{
             }
         });
        
-    }else(!authHeader)
+    }
+    else
     {
         const error=new Error("Token is missing!!")
         error.status=401;
